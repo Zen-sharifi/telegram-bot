@@ -1,22 +1,21 @@
 import logging
 import asyncio
 import aiosqlite
+import pandas as pd
 import os
 from aiogram import Bot, Dispatcher, types
+from aiogram.filters import Command
 
-# دریافت توکن از متغیر محیطی (نه مستقیم در کد)
 TOKEN = os.getenv("BOT_TOKEN")
-if not TOKEN:
-    raise ValueError("❌ BOT_TOKEN مقداردهی نشده است!")
 
-# راه‌اندازی ربات و دیسپچر
+if not TOKEN:
+    raise ValueError("❌ BOT_TOKEN is missing! Make sure it's set in Environment Variables.")
+
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# تنظیمات لاگ‌گیری
 logging.basicConfig(level=logging.INFO)
 
-# ایجاد دیتابیس (استفاده از aiosqlite به‌صورت async)
 async def create_db():
     async with aiosqlite.connect("users.db") as db:
         await db.execute('''CREATE TABLE IF NOT EXISTS users (
@@ -28,16 +27,11 @@ async def create_db():
                     phone TEXT)''')
         await db.commit()
 
-# پیام خوش‌آمدگویی
-@dp.message_handler(commands=['start'])
+@dp.message(Command("start"))
 async def start_command(message: types.Message):
-    await message.answer("👋 خوش آمدید! لطفاً اطلاعات خود را برای ثبت‌نام ارسال کنید:\n"
-                         "1️⃣ نام و نام خانوادگی\n"
-                         "2️⃣ سن\n"
-                         "3️⃣ مهارت یا شغل\n"
-                         "4️⃣ شماره تماس")
+    await message.answer("👋 خوش آمدید! لطفاً اطلاعات خود را ارسال کنید.")
 
-@dp.message_handler(lambda message: not message.text.startswith('/'))
+@dp.message()
 async def register(message: types.Message):
     user_id = message.from_user.id
 
@@ -50,22 +44,16 @@ async def register(message: types.Message):
         else:
             user_data = message.text.split("\n")
             if len(user_data) < 4:
-                await message.answer("❌ لطفاً اطلاعات را در ۴ خط ارسال کنید:\n"
-                                     "1️⃣ نام و نام خانوادگی\n"
-                                     "2️⃣ سن\n"
-                                     "3️⃣ مهارت یا شغل\n"
-                                     "4️⃣ شماره تماس")
+                await message.answer("❌ لطفاً اطلاعات را در ۴ خط ارسال کنید.")
             else:
                 name, age, skill, phone = user_data
                 await db.execute("INSERT INTO users (user_id, name, age, skill, phone) VALUES (?, ?, ?, ?, ?)",
                                (user_id, name, age, skill, phone))
                 await db.commit()
-                await message.answer("✅ اطلاعات شما با موفقیت ذخیره شد!")
+                await message.answer("✅ اطلاعات شما ذخیره شد!")
 
-# اجرای ربات
 async def main():
-    await create_db()  # اجرای تابع ایجاد دیتابیس
-    print("✅ Bot is running...")  # نمایش لاگ در Render
+    await create_db()
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
