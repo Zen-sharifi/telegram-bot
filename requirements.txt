@@ -1,6 +1,6 @@
-aiogram
-aiosqlite
-pandas
-openpyxl
-fastapi
-uvicorn
+aiogram==3.17.0
+aiosqlite==0.21.0
+pandas==2.2.3
+openpyxl==3.1.5
+uvicorn==0.34.0
+fastapi==0.115.8
