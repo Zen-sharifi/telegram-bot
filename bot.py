@@ -64,7 +64,7 @@ async def register(message: Message):
 # دریافت اطلاعات کاربران در تلگرام (فقط برای مدیر)
 @dp.message(Command("users"))
 async def send_users_list(message: Message):
-    if message.from_user.id != ADMIN_ID:
+    if message.from_user.id != 48592215:
         await message.answer("⛔ شما اجازه دسترسی به این بخش را ندارید!")
         return
 
