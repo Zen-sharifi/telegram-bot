@@ -3,13 +3,13 @@ name: Deploy to Fly.io
 on:
   push:
     branches:
-      - main  # وقتی روی این برنچ پوش کردی، اجرا بشه
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Install Fly.io CLI
@@ -17,5 +17,5 @@ jobs:
 
       - name: Deploy to Fly.io
         run: |
-          flyctl auth token "${{ secrets.FLY_API_TOKEN }}"
+          export FLY_API_TOKEN=${{ secrets.FLY_API_TOKEN }}
           flyctl deploy
