@@ -8,7 +8,7 @@ from aiogram.types import Message
 from aiogram.filters import Command
 
 TOKEN = os.getenv("BOT_TOKEN")  # دریافت توکن از متغیر محیطی
-ADMIN_ID = =[48592215, 8008403835]  # آیدی تلگرام مدیر (عدد را با آیدی خودت جایگزین کن)
+ADMIN_ID = [48592215, 8008403835]  # آیدی‌های مدیران
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -64,7 +64,7 @@ async def register(message: Message):
 # دریافت اطلاعات کاربران در تلگرام (فقط برای مدیر)
 @dp.message(Command("users"))
 async def send_users_list(message: Message):
-    if message.from_user.id != ADMIN_ID:
+    if message.from_user.id not in ADMIN_ID:  # بررسی اینکه آیا کاربر مدیر است
         await message.answer("⛔ شما اجازه دسترسی به این بخش را ندارید!")
         return
 
@@ -85,7 +85,7 @@ async def send_users_list(message: Message):
 # دریافت خروجی اکسل (فقط برای مدیر)
 @dp.message(Command("export"))
 async def export_users(message: Message):
-    if message.from_user.id != ADMIN_ID:
+    if message.from_user.id not in ADMIN_ID:  # بررسی دسترسی صحیح
         await message.answer("⛔ شما اجازه دسترسی به این بخش را ندارید!")
         return
 
