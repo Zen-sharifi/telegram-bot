@@ -1,4 +1,6 @@
 aiogram
+aiosqlite
 pandas
 openpyxl
-aiosqlite
+fastapi
+uvicorn
