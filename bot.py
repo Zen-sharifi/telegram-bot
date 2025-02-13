@@ -2,11 +2,13 @@ import os
 import logging
 import asyncio
 import aiosqlite
+import pandas as pd
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message
 from aiogram.filters import Command
 
 TOKEN = os.getenv("BOT_TOKEN")  # دریافت توکن از متغیر محیطی
+ADMIN_ID = 123456789  # آیدی تلگرام مدیر (عدد را با آیدی خودت جایگزین کن)
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -33,9 +35,10 @@ async def start_command(message: Message):
                          "نام و نام خانوادگی\n"
                          "سن\n"
                          "مهارت\n"
-                         "شماره تماس")
+                         "شماره تماس\n\n"
+                         "📌 اطلاعات را در ۴ خط جداگانه ارسال کنید.")
 
-# ثبت اطلاعات کاربر
+# ثبت اطلاعات کاربر و ارسال لینک کانال
 @dp.message(lambda message: not message.text.startswith('/'))
 async def register(message: Message):
     user_id = message.from_user.id
@@ -56,7 +59,50 @@ async def register(message: Message):
                          (user_id, name, age, skill, phone))
         await db.commit()
 
-    await message.answer("✅ اطلاعات شما ذخیره شد!")
+    await message.answer("✅ اطلاعات شما ذخیره شد!\n\n📢 برای دریافت اخبار و آموزش‌ها، به کانال تلگرام ما بپیوندید:\n👉 [کلیک کنید](https://t.me/zensharifi)", parse_mode="Markdown")
+
+# دریافت اطلاعات کاربران در تلگرام (فقط برای مدیر)
+@dp.message(Command("users"))
+async def send_users_list(message: Message):
+    if message.from_user.id != ADMIN_ID:
+        await message.answer("⛔ شما اجازه دسترسی به این بخش را ندارید!")
+        return
+
+    async with aiosqlite.connect("users.db") as db:
+        cursor = await db.execute("SELECT name, age, skill, phone FROM users")
+        users = await cursor.fetchall()
+
+    if not users:
+        await message.answer("⚠️ هنوز هیچ کاربری ثبت‌نام نکرده است!")
+        return
+
+    response = "📋 **لیست کاربران:**\n"
+    for user in users:
+        response += f"👤 {user[0]} | 🎂 {user[1]} | 💼 {user[2]} | 📞 {user[3]}\n"
+
+    await message.answer(response, parse_mode="Markdown")
+
+# دریافت خروجی اکسل (فقط برای مدیر)
+@dp.message(Command("export"))
+async def export_users(message: Message):
+    if message.from_user.id != ADMIN_ID:
+        await message.answer("⛔ شما اجازه دسترسی به این بخش را ندارید!")
+        return
+
+    async with aiosqlite.connect("users.db") as db:
+        cursor = await db.execute("SELECT * FROM users")
+        data = await cursor.fetchall()
+
+    if not data:
+        await message.answer("⚠️ هنوز هیچ کاربری ثبت‌نام نکرده است!")
+        return
+
+    df = pd.DataFrame(data, columns=["ID", "User ID", "نام", "سن", "مهارت", "شماره تماس"])
+    file_path = "users.xlsx"
+    df.to_excel(file_path, index=False)
+
+    with open(file_path, "rb") as file:
+        await bot.send_document(message.chat.id, file, caption="📄 لیست کاربران")
 
 # اجرای بات
 async def main():
