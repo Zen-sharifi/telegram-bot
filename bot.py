@@ -3,7 +3,7 @@ import asyncio
 import sqlite3
 import pandas as pd
 from aiogram import Bot, Dispatcher, types
-from aiogram.utils import executor
+
 
 TOKEN = "7664252081:AAE909gJMA9fzvpeGMNT2UNdkZ3R9MpOq80"
 
@@ -74,3 +74,12 @@ async def export_users(message: types.Message):
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
+
+
+import asyncio
+
+async def main():
+    await dp.start_polling(bot)
+
+if __name__ == '__main__':
+    asyncio.run(main())
