@@ -8,7 +8,7 @@ from aiogram.types import Message
 from aiogram.filters import Command
 
 TOKEN = os.getenv("BOT_TOKEN")  # دریافت توکن از متغیر محیطی
-ADMIN_ID = 48592215  # آیدی تلگرام مدیر (عدد را با آیدی خودت جایگزین کن)
+ADMIN_ID = =[48592215, 8008403835]  # آیدی تلگرام مدیر (عدد را با آیدی خودت جایگزین کن)
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
