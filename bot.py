@@ -8,7 +8,7 @@ from aiogram.types import Message
 from aiogram.filters import Command
 
 TOKEN = os.getenv("BOT_TOKEN")  # دریافت توکن از متغیر محیطی
-ADMIN_ID = 123456789  # آیدی تلگرام مدیر (عدد را با آیدی خودت جایگزین کن)
+ADMIN_ID = 48592215  # آیدی تلگرام مدیر (عدد را با آیدی خودت جایگزین کن)
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -34,7 +34,7 @@ async def start_command(message: Message):
     await message.answer("👋 خوش آمدید! لطفاً اطلاعات خود را ارسال کنید.\n"
                          "نام و نام خانوادگی\n"
                          "سن\n"
-                         "مهارت\n"
+                         "شغل یا مهارت\n"
                          "شماره تماس\n\n"
                          "📌 اطلاعات را در ۴ خط جداگانه ارسال کنید.")
 
@@ -64,7 +64,7 @@ async def register(message: Message):
 # دریافت اطلاعات کاربران در تلگرام (فقط برای مدیر)
 @dp.message(Command("users"))
 async def send_users_list(message: Message):
-    if message.from_user.id != 48592215:
+    if message.from_user.id != ADMIN_ID:
         await message.answer("⛔ شما اجازه دسترسی به این بخش را ندارید!")
         return
 
